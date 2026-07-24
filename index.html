@@ -57,6 +57,26 @@
   <div class="spine__packet" id="spinePacket"></div>
 </div>
 
+<!-- ============ PHASE RAIL (network descent) ============ -->
+<ul class="prail" id="prail" aria-hidden="true">
+  <li data-sec="hero"><span class="prail__n">01</span><span class="prail__tick"></span><span class="prail__t">Borde</span></li>
+  <li data-sec="servicios"><span class="prail__n">02</span><span class="prail__tick"></span><span class="prail__t">Enrutamiento</span></li>
+  <li data-sec="resultados"><span class="prail__n">03</span><span class="prail__tick"></span><span class="prail__t">Núcleo</span></li>
+  <li data-sec="metodologia"><span class="prail__n">04</span><span class="prail__tick"></span><span class="prail__t">Orquestación</span></li>
+  <li data-sec="casos"><span class="prail__n">05</span><span class="prail__tick"></span><span class="prail__t">Despliegue</span></li>
+  <li data-sec="contacto"><span class="prail__n">06</span><span class="prail__tick"></span><span class="prail__t">Enlace</span></li>
+</ul>
+
+<!-- ============ TELEMETRY HUD ============ -->
+<aside class="hud" id="hud" aria-hidden="true">
+  <div class="hud__row"><span class="hud__k">profundidad</span><span class="hud__v" id="hudDepth">0%</span></div>
+  <div class="hud__row"><span class="hud__k">latencia</span><span class="hud__v" id="hudLat">— ms</span></div>
+  <div class="hud__row"><span class="hud__k">throughput</span><span class="hud__v" id="hudTh">— Gbps</span></div>
+  <div class="hud__row"><span class="hud__k">nodos</span><span class="hud__v" id="hudHops">0</span></div>
+  <div class="hud__row hud__row--phase"><span class="hud__k">capa</span><span class="hud__v" id="hudPhase">BORDE</span></div>
+  <div class="hud__bar"><i id="hudBar"></i></div>
+</aside>
+
 <!-- ============ NAV ============ -->
 <header class="nav" id="nav">
   <a class="brand" href="#top" aria-label="J5 Data inicio">
@@ -500,6 +520,7 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>

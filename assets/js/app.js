@@ -10,6 +10,7 @@
   var lerp = function (a, b, t) { return a + (b - a) * t; };
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   var rAF = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
+  var lenis = null;
 
   /* ---------------- PRELOADER ---------------- */
   (function boot() {
@@ -496,7 +497,61 @@
     });
   })();
 
-  /* ---------------- SMOOTH ANCHOR (respect reduce) ---------------- */
+  /* ---------------- SMOOTH SCROLL (Lenis) + TELEMETRY HUD/RAIL ---------------- */
+  (function scrollExperience() {
+    // Lenis smooth scroll (buttery descent). Falls back to native if unavailable.
+    if (window.Lenis && !reduce) {
+      try {
+        lenis = new window.Lenis({ duration: 1.1, smoothWheel: true, wheelMultiplier: 0.95, lerp: 0.09 });
+        var raf = function (t) { lenis.raf(t); rAF(raf); };
+        rAF(raf);
+      } catch (e) { lenis = null; }
+    }
+
+    // Themed telemetry: a signal descending through the network layers.
+    var STAGES = [
+      { sec: "hero", cap: "BORDE" },
+      { sec: "servicios", cap: "ENRUTAMIENTO" },
+      { sec: "resultados", cap: "NÚCLEO" },
+      { sec: "metodologia", cap: "ORQUESTACIÓN" },
+      { sec: "casos", cap: "DESPLIEGUE" },
+      { sec: "contacto", cap: "ENLACE" }
+    ];
+    var items = $$("#prail li");
+    var hDepth = $("#hudDepth"), hLat = $("#hudLat"), hTh = $("#hudTh"), hHops = $("#hudHops"), hPhase = $("#hudPhase"), hBar = $("#hudBar");
+    var lastStage = -1, ticking = false;
+    function ease(x) { return 1 - Math.pow(1 - x, 2); }
+    function update() {
+      ticking = false;
+      var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+      var p = max > 0 ? clamp(window.scrollY / max, 0, 1) : 0;
+      var idx = 0;
+      for (var i = 0; i < STAGES.length; i++) {
+        var el = document.getElementById(STAGES[i].sec);
+        if (el && el.getBoundingClientRect().top <= innerHeight * 0.42) idx = i;
+      }
+      if (hDepth) {
+        var e = ease(p);
+        hDepth.textContent = Math.round(p * 100) + "%";
+        var lat = 46 * (1 - e) + 0.4 * e; hLat.textContent = (lat < 10 ? lat.toFixed(1) : Math.round(lat)) + " ms";
+        var th = 1 + 399 * e; hTh.textContent = (th < 10 ? th.toFixed(1) : Math.round(th)) + " Gbps";
+        hHops.textContent = 1 + Math.round(p * 11);
+        hBar.style.width = (p * 100).toFixed(1) + "%";
+        if (idx !== lastStage) {
+          lastStage = idx;
+          hPhase.textContent = STAGES[idx].cap;
+          items.forEach(function (it, i) { it.classList.toggle("is-active", i === idx); it.classList.toggle("is-done", i < idx); });
+        }
+      }
+    }
+    function onScroll() { if (!ticking) { ticking = true; rAF(update); } }
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", update);
+    window.addEventListener("load", update);
+  })();
+
+  /* ---------------- SMOOTH ANCHOR ---------------- */
   $$('a[href^="#"]').forEach(function (a) {
     a.addEventListener("click", function (e) {
       var id = a.getAttribute("href");
@@ -504,7 +559,8 @@
       var t = document.querySelector(id);
       if (!t) return;
       e.preventDefault();
-      t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      if (lenis) lenis.scrollTo(t, { offset: -10, duration: 1.2 });
+      else t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     });
   });
 
