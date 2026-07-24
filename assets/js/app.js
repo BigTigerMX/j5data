@@ -536,7 +536,7 @@
         var lat = 46 * (1 - e) + 0.4 * e; hLat.textContent = (lat < 10 ? lat.toFixed(1) : Math.round(lat)) + " ms";
         var th = 1 + 399 * e; hTh.textContent = (th < 10 ? th.toFixed(1) : Math.round(th)) + " Gbps";
         hHops.textContent = 1 + Math.round(p * 11);
-        hBar.style.width = (p * 100).toFixed(1) + "%";
+        hBar.style.transform = "scaleX(" + p.toFixed(4) + ")";
         if (idx !== lastStage) {
           lastStage = idx;
           hPhase.textContent = STAGES[idx].cap;
