@@ -551,7 +551,33 @@
     window.addEventListener("load", update);
   })();
 
-  /* ---------------- SMOOTH ANCHOR ---------------- */
+  /* ---------------- CASE TABS (casos.html) ---------------- */
+  (function caseTabs() {
+    var tabs = $$(".ctab");
+    if (!tabs.length) return;
+    var secs = tabs.map(function (t) { return document.getElementById(t.getAttribute("data-tab")); });
+    var last = -1, ticking = false;
+    function update() {
+      ticking = false;
+      var idx = 0;
+      for (var i = 0; i < secs.length; i++) {
+        var s = secs[i];
+        if (s && s.getBoundingClientRect().top <= innerHeight * 0.42) idx = i;
+      }
+      if (idx === last) return;
+      last = idx;
+      for (var k = 0; k < tabs.length; k++) tabs[k].classList.toggle("is-active", k === idx);
+    }
+    function onScroll() { if (!ticking) { ticking = true; rAF(update); } }
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", update);
+    window.addEventListener("load", update);
+  })();
+
+  /* ---------------- SMOOTH ANCHOR ----------------
+     Offset comes from the target's CSS scroll-margin-top, so sticky
+     chrome (nav + case tabs) never covers the landing position. */
   $$('a[href^="#"]').forEach(function (a) {
     a.addEventListener("click", function (e) {
       var id = a.getAttribute("href");
@@ -559,8 +585,10 @@
       var t = document.querySelector(id);
       if (!t) return;
       e.preventDefault();
-      if (lenis) lenis.scrollTo(t, { offset: -10, duration: 1.2 });
-      else t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      if (lenis) {
+        var smt = parseFloat(getComputedStyle(t).scrollMarginTop) || 10;
+        lenis.scrollTo(t, { offset: -smt, duration: 1.2 });
+      } else t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     });
   });
 
