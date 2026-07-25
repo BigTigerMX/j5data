@@ -498,11 +498,6 @@ body::after{ /* fine film grain for depth */
 .nav__links a.is-current::after{transform:scaleX(1);background:var(--signal)}
 .phead{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
   padding:clamp(118px,16vh,192px) 0 clamp(38px,6vw,68px)}
-.phead__grid{position:absolute;inset:0;z-index:0;opacity:.45;
-  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-  background-size:64px 64px;
-  mask-image:radial-gradient(115% 85% at 50% 0%,#000 12%,transparent 78%);
-  -webkit-mask-image:radial-gradient(115% 85% at 50% 0%,#000 12%,transparent 78%)}
 .phead__inner{position:relative;z-index:2;max-width:840px}
 .crumb{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--dim);letter-spacing:.1em;margin-bottom:26px}
 .crumb a{color:var(--muted);transition:color .25s}
