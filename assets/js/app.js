@@ -499,12 +499,50 @@
 
   /* ---------------- SMOOTH SCROLL (Lenis) + TELEMETRY HUD/RAIL ---------------- */
   (function scrollExperience() {
-    // Lenis smooth scroll (buttery descent). Falls back to native if unavailable.
+    /* ---- Scroll suave con LÍMITE DE VELOCIDAD ----
+       Por más fuerte que se deslice (rueda o dedo), la página nunca avanza
+       más rápido que PACE pantallas por segundo, para que no se pase ningún
+       detalle. Para ajustar el ritmo solo se cambia PACE:
+         1.5 = más pausado   ·   2.0 = actual   ·   3.0 = casi sin freno    */
+    var PACE = 2.0;
+    var LERP = 0.085;
+    var jumping = false;   // durante un salto por ancla no se aplica el límite
+
     if (window.Lenis && !reduce) {
       try {
-        lenis = new window.Lenis({ duration: 1.1, smoothWheel: true, wheelMultiplier: 0.95, lerp: 0.09 });
-        var raf = function (t) { lenis.raf(t); rAF(raf); };
+        lenis = new window.Lenis({
+          smoothWheel: true,
+          lerp: LERP,
+          wheelMultiplier: 0.9,
+          syncTouch: true,        // el límite también aplica al deslizar con el dedo
+          syncTouchLerp: LERP,
+          touchMultiplier: 1.1
+        });
+
+        // Lenis anima hacia `animate.to`; acotando la distancia que ese
+        // objetivo puede llevarle a la posición actual, se acota la velocidad.
+        var speedLimit = function () {
+          var a = lenis.animate;
+          if (jumping || !a || !a.isRunning) return;
+          if (typeof a.to !== "number" || typeof a.value !== "number") return;
+          var lp = a.lerp || LERP;
+          var lead = (innerHeight * PACE) / (lp * 60);   // px de ventaja máxima
+          var from = a.value;
+          if (a.to - from > lead) { a.to = from + lead; lenis.targetScroll = a.to; }
+          else if (from - a.to > lead) { a.to = from - lead; lenis.targetScroll = a.to; }
+        };
+
+        var raf = function (t) { speedLimit(); lenis.raf(t); rAF(raf); };
         rAF(raf);
+        // Control del límite: calibrar el ritmo y liberarlo en saltos por ancla.
+        lenis.limiter = {
+          pace: function (v) { if (typeof v === "number") PACE = v; return PACE; },
+          release: function (v) { jumping = !!v; },
+          step: speedLimit
+        };
+        // Expuesto a propósito: permite calibrar el ritmo en vivo desde la
+        // consola con  lenis.limiter.pace(1.5)  sin tocar el código.
+        window.lenis = lenis;
       } catch (e) { lenis = null; }
     }
 
@@ -587,7 +625,12 @@
       e.preventDefault();
       if (lenis) {
         var smt = parseFloat(getComputedStyle(t).scrollMarginTop) || 10;
-        lenis.scrollTo(t, { offset: -smt, duration: 1.2 });
+        // Un salto por ancla es intencional: debe llegar sin el freno de velocidad.
+        var lim = lenis.limiter;
+        if (lim) lim.release(true);
+        var done = function () { if (lim) lim.release(false); };
+        lenis.scrollTo(t, { offset: -smt, duration: 1.2, onComplete: done });
+        setTimeout(done, 2200);   // por si onComplete no llega
       } else t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     });
   });
