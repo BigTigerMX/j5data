@@ -219,8 +219,6 @@ body::after{ /* fine film grain for depth */
 .hero__sub{font-size:clamp(1.05rem,2vw,1.28rem);color:var(--muted);max-width:640px;margin-bottom:36px;font-weight:420}
 .hero__sub b{color:var(--text);font-weight:600}
 .hero__cta{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:44px}
-.hero__meta{display:flex;flex-wrap:wrap;align-items:center;gap:16px;color:var(--dim);font-size:12px;letter-spacing:.08em}
-.hero__meta i{width:4px;height:4px;border-radius:50%;background:var(--line-2)}
 .hero__scroll{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;
   font-family:var(--font-mono);font-size:10px;letter-spacing:.3em;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:10px}
 .hero__scroll span{width:1px;height:44px;background:linear-gradient(var(--signal),transparent);animation:scrolldrop 2s var(--ease) infinite}
@@ -621,4 +619,147 @@ body::after{ /* fine film grain for depth */
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
   [data-reveal]{opacity:1!important;transform:none!important}
   .reticle,.spine__packet,.hero__scroll{display:none}
+}
+
+/* =====================================================================
+   CREDENTIAL BADGES (más reconocible que texto plano)
+   ===================================================================== */
+.creds{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}
+.cred{display:inline-flex;align-items:center;gap:11px;padding:9px 14px 9px 11px;
+  border:1px solid var(--line-2);border-radius:13px;background:rgba(10,14,24,.55);
+  backdrop-filter:blur(8px);transition:border-color .35s var(--ease),transform .35s var(--ease)}
+.cred:hover{border-color:rgba(52,224,196,.4);transform:translateY(-2px)}
+.cred__mark{width:30px;height:30px;flex:none;color:var(--signal)}
+.cred__mark svg{width:100%;height:100%}
+.cred__txt{display:flex;flex-direction:column;line-height:1.15}
+.cred__txt b{font-family:var(--font-display);font-weight:700;font-size:.98rem;letter-spacing:.01em;color:var(--text)}
+.cred__txt i{font-style:normal;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;
+  color:var(--dim);text-transform:uppercase;margin-top:2px}
+.cred--hero .cred__mark{color:var(--signal)}
+
+/* =====================================================================
+   MOBILE ACTION BAR (hace visible que hay más de una página)
+   ===================================================================== */
+.mbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:95;
+  gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+  background:rgba(8,11,18,.9);backdrop-filter:blur(16px) saturate(140%);
+  border-top:1px solid var(--line)}
+.mbar a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:8px 4px;border-radius:11px;font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);border:1px solid transparent;transition:color .3s,background .3s,border-color .3s}
+.mbar a svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.mbar a.is-current{color:var(--signal);background:rgba(52,224,196,.09);border-color:rgba(52,224,196,.3)}
+.mbar__cta{color:#04120F!important;background:var(--signal);font-weight:700}
+.mbar__cta svg{stroke-width:2.2}
+
+/* =====================================================================
+   MOBILE READING PASS
+   Objetivo: que se lea rápido y de un tirón en el celular.
+   Las tarjetas pasan a formato horizontal compacto (icono + texto),
+   conservando el contenido pero recortando el alto a menos de la mitad.
+   ===================================================================== */
+@media (max-width:680px){
+  body{padding-bottom:88px}            /* espacio para la barra inferior */
+  .mbar{display:flex}
+  .section{padding-block:50px}
+
+  /* ---- hero: más apretado, entra completo ---- */
+  .hero{min-height:92svh;padding-top:88px}
+  .hero__badge{margin-bottom:16px}
+  .hero__eyebrow{margin-bottom:12px}
+  .hero__title{margin-bottom:16px}
+  .hero__sub{margin-bottom:24px;font-size:1.02rem}
+  .hero__cta{gap:10px;margin-bottom:26px}
+  .hero__cta .btn{flex:1;justify-content:center}
+  .hero__scroll{display:none}
+
+  /* ---- encabezados de sección ---- */
+  .shead{margin-bottom:26px}
+  .shead__kicker{margin-bottom:10px}
+  .shead__lede{margin-top:12px;font-size:.98rem}
+
+  /* ---- pilares: horizontal compacto ---- */
+  .pillars__grid{gap:10px}
+  .pill{display:grid;grid-template-columns:42px 1fr;grid-template-areas:"ico title" "ico desc";
+    gap:2px 14px;align-items:center;padding:15px 16px}
+  .pill__ico{grid-area:ico;width:42px;height:42px;margin:0}
+  .pill h3{grid-area:title;font-size:1.04rem;margin-bottom:2px}
+  .pill p{grid-area:desc;font-size:.88rem;line-height:1.45}
+  .pill__idx{display:none}
+
+  /* ---- servicios: 6 filas compactas en vez de 6 tarjetas altas ---- */
+  .svc{gap:10px}
+  .svc__card{display:grid;grid-template-columns:54px 1fr;grid-template-areas:"viz title" "viz desc";
+    gap:2px 14px;align-items:center;padding:14px 16px}
+  .svc__card:hover{transform:none}
+  .svc__viz{grid-area:viz;width:54px;height:54px;margin:0;border-radius:12px}
+  .svc__no{display:none}
+  .svc__card h3{grid-area:title;font-size:1.02rem;margin-bottom:2px}
+  .svc__card p{grid-area:desc;font-size:.86rem;line-height:1.45;margin-bottom:0}
+  .svc__tags{display:none}
+
+  /* ---- showcase ---- */
+  .showcase{min-height:auto;padding-block:56px}
+  .showcase__stats{gap:10px}
+
+  /* ---- NOC: monitor más bajo + KPIs 2x2 ---- */
+  .noc__canvas{height:140px}
+  .noc__log{height:62px}
+  .noc__legend{gap:14px;padding:10px 16px}
+  .noc__kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{padding:15px 14px}
+  .kpi__spark{margin:10px 0}
+  .kpi__label{font-size:.8rem;line-height:1.4}
+
+  /* ---- metodología ---- */
+  .hop{padding:13px 8px 13px 14px}
+  .hop__body h3{font-size:1.02rem}
+  .hop__body p{font-size:.86rem}
+
+  /* ---- casos: tarjetas horizontales ---- */
+  .cgal{gap:10px}
+  .cgal__item{flex-direction:row;align-items:stretch}
+  .cgal__item:hover{transform:none}
+  .cgal__media{width:36%;flex:none;aspect-ratio:auto}
+  .cgal__media img{opacity:.6}
+  .cgal__body{padding:13px 14px;gap:5px}
+  .cgal__title{font-size:.98rem;line-height:1.22}
+  .cgal__no{font-size:9.5px}
+  .cgal__tags{font-size:9.5px;padding-top:2px}
+  .cgal__go{display:none}
+
+  /* ---- valores / contacto ---- */
+  .values__row{gap:10px 14px;margin-top:22px;font-size:11px}
+  .contact__form{padding:18px;gap:12px}
+  .contact__grid{gap:26px}
+  .contact__title{margin-bottom:14px}
+  .contact__sub{margin-bottom:20px;font-size:1rem}
+  .contact__list{gap:10px}
+  .contact__list li{padding-bottom:10px}
+  .contact__list a,.contact__list li>span:last-child{font-size:.98rem}
+  .field input,.field textarea{padding:11px 13px;font-size:16px}
+  .field textarea{min-height:88px}
+  .field label{font-size:11.5px}
+
+  /* ---- credenciales ---- */
+  .creds{gap:8px}
+  .cred{padding:8px 12px 8px 10px;gap:9px}
+  .cred__mark{width:26px;height:26px}
+  .cred__txt b{font-size:.9rem}
+
+  /* ---- pie ---- */
+  .foot{padding-top:44px}
+  .foot__grid{padding-bottom:32px;gap:26px}
+
+  /* ---- subpágina de casos ---- */
+  .phead{padding-top:100px;padding-bottom:30px}
+  .ccase__detail{gap:20px}
+  .ccase__list li,.ccase__res li{font-size:.9rem}
+  .deliv__item{padding:16px 16px}
+}
+
+/* pantallas muy angostas */
+@media (max-width:380px){
+  .mbar a{font-size:9px}
+  .svc__card,.pill{gap:2px 11px}
 }
